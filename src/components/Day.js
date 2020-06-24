@@ -1,8 +1,9 @@
 import React from 'react';
 import './Day.css'
-import { Popover, Button } from 'antd';
+import { Popover } from 'antd';
+import NewReminder from './NewReminder';
 
-export default class Day {
+export default class Day extends React.Component {
 
   state = {
     visible: false,
@@ -23,20 +24,21 @@ export default class Day {
   }
 
   render() {
-    return (<div className="day-container" onclick={this.handleDayClick}>
+    return (
       <Popover
-        content={<a onClick={this.hide}>Close</a>}
+        content={<NewReminder/>}
         title="Title"
         trigger="click"
         visible={this.state.visible}
         onVisibleChange={this.handleVisibleChange}
       >
-        {/* <Button type="primary">Click me</Button> */}
-        <div className="header">)
-      {this.props.day.numberDay}
+        <div className="day-container" onClick={this.handleDayClick}>
+          {/* <Button type="primary">Click me</Button> */}
+          <div className="header">
+            {this.props.day.numberDay}
+          </div >
         </div >
       </Popover>
-    </div >
     )
   }
 }

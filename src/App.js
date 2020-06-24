@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Redirect, Switch, Route, Link } from 'react-router-dom';
 import Monthly from './components/Monthly';
+import 'antd/dist/antd.css';
 
 export default function App() {
   return (

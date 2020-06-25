@@ -1,61 +1,71 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import Day from './Day';
+import { editReminder, deleteReminder } from '../redux/actions';
 
-export default function Monthly() {
-  const weekDays = moment.weekdays()
-  const totalTableDays = 35;
-  const currentMonth = moment().month()
-  const daysInTable = []
-  let initialMonth = moment().date(1)
-  if (initialMonth.weekday() !== 0) { // 0 = SUNDAY
-    initialMonth = moment().month(currentMonth - 1)
-    const daysInInitalMonth = initialMonth.daysInMonth()
-    const weekdayLastDayInitialMonth = initialMonth.date(daysInInitalMonth).day()
-    initialMonth.date(daysInInitalMonth - weekdayLastDayInitialMonth)
-  }
-  else {
-    initialMonth = moment().date(1)
+const Monthly = ({ reminders, editReminder, deleteReminder }) => {
+  const weekDays = moment.weekdays();
+  const currentMonth = moment().month();
+  let initialMonth = moment().date(1);
+  if (initialMonth.weekday() !== 0) {
+    initialMonth = moment().month(currentMonth - 1);
+    const daysInInitalMonth = initialMonth.daysInMonth();
+    const weekdayLastDayInitialMonth = initialMonth.date(daysInInitalMonth).day();
+    initialMonth.date(daysInInitalMonth - weekdayLastDayInitialMonth);
+  } else {
+    initialMonth = moment().date(1);
   }
 
-  for (let day = 0; day < totalTableDays; day++) {
-    const tableDay = {
-      numberDay: initialMonth.date()
-    }
-    daysInTable.push(tableDay)
-    initialMonth.date(initialMonth.date() + 1)
-  }
-
-  const Columns = (i) => {
-    let columns = []
+  const Columns = i => {
+    let columns = [];
     for (let column = 0; column < 7; column++) {
-      const index = (i * 7) + column
-      const day = daysInTable[index]
-      columns.push(<td ><Day key={index} day={day}></Day></td>)
+      const index = i * 7 + column;
+      const day = {
+        numberDay: initialMonth.date(),
+      };
+      const dayReminders = reminders[initialMonth.format('YYYY_MM_DD')];
+      columns.push(
+        <td>
+          <Day key={index} day={day} reminders={dayReminders} onDelete={deleteReminder}></Day>
+        </td>
+      );
+      initialMonth.date(initialMonth.date() + 1);
     }
-    return columns
-  }
+    return columns;
+  };
 
   const Rows = () => {
-    let rows = []
+    let rows = [];
     for (let row = 0; row < 5; row++) {
-      rows.push(<tr>{Columns(row)}</tr>)
+      rows.push(<tr>{Columns(row)}</tr>);
     }
-    return rows
-  }
+    return rows;
+  };
 
   return (
     <main>
       <table>
         <thead>
           <tr>
-            {weekDays.map(day => <th>{day}</th>)}
+            {weekDays.map(day => (
+              <th>{day}</th>
+            ))}
           </tr>
         </thead>
-        <tbody>
-          {Rows()}
-        </tbody>
+        <tbody>{Rows()}</tbody>
       </table>
     </main>
   );
-}
+};
+
+const mapStateToProps = state => ({
+  reminders: state.reminders,
+});
+
+const mapDispatchToProps = dispatch => ({
+  editReminder: reminder => dispatch(editReminder(reminder)),
+  deleteReminder: id => dispatch(deleteReminder(id)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Monthly);

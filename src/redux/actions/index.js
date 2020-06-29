@@ -1,28 +1,33 @@
-let nextReminderId = 0
+let nextReminderId = 0;
 export const createReminder = reminder => ({
   type: 'CREATE_REMINDER',
   id: nextReminderId++,
-  ...reminder
-})
+  ...reminder,
+});
 
 export const editReminder = reminder => ({
   type: 'EDIT_REMINDER',
-  id: reminder.id,
-  reminder: reminder
-})
+  ...reminder,
+});
 
-export const deleteReminder = id => ({
+export const deleteReminder = (id, time) => ({
   type: 'DELETE_REMINDER',
-  id
-})
+  id,
+  time,
+});
+
+export const deleteRemindersDay = time => ({
+  type: 'DELETE_REMINDER_DAY',
+  time,
+});
 
 export const setVisibilityFilter = filter => ({
   type: 'SET_VISIBILITY_FILTER',
-  filter
-})
+  filter,
+});
 
 export const VisibilityFilters = {
   SHOW_ALL: 'SHOW_ALL',
   SHOW_COMPLETED: 'SHOW_COMPLETED',
-  SHOW_ACTIVE: 'SHOW_ACTIVE'
-}
+  SHOW_ACTIVE: 'SHOW_ACTIVE',
+};

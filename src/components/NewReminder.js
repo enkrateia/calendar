@@ -1,9 +1,11 @@
 import React from 'react';
 // import './NewReminder.css'
-import { Input, DatePicker, Button } from 'antd';
+import { Input, DatePicker, Button, TimePicker } from 'antd';
 import { GithubPicker } from 'react-color';
 import { connect } from 'react-redux';
-import { createReminder } from '../redux/actions';
+import { createReminder, editReminder } from '../redux/actions';
+import { timerFormatWithoutSeconds } from '../helpers/time';
+import moment from 'moment';
 
 class NewReminder extends React.Component {
   constructor(props) {
@@ -20,15 +22,10 @@ class NewReminder extends React.Component {
 
   handleSubmission = e => {
     e.preventDefault();
-    this.props.dispatch(createReminder(this.state.reminder));
-    this.setState({
-      reminder: {
-        text: '',
-        color: '',
-        city: '',
-        time: '',
-      },
-    }); // TODO: THIS IS WRONG
+    const id = this.props.reminder.id;
+    if (id === undefined) this.props.dispatch(createReminder(this.state.reminder));
+    else this.props.dispatch(editReminder({ id, ...this.state.reminder }));
+    this.props.onSubmit();
   };
 
   onColorChange = color => {
@@ -39,7 +36,6 @@ class NewReminder extends React.Component {
     if (date) {
       this.setState(state => ({ reminder: { ...state.reminder, time: e } }));
     } else {
-      e.preventDefault();
       const value = e.target.value;
       if (e.target.id === 'text') {
         this.setState(state => ({ reminder: { ...state.reminder, text: value } }));
@@ -49,17 +45,32 @@ class NewReminder extends React.Component {
     }
   };
 
+  onChangeTime = e => {
+    const reminderTime = this.state.reminder.time;
+    const date = moment(reminderTime).hour(e.hour()).minute(e.minute());
+    this.setState(state => ({ reminder: { ...state.reminder, time: date } }));
+  };
+
   render() {
     const { text, color, city, time } = this.state.reminder;
+    const { id } = this.props.reminder;
     return (
       <>
         <form>
           <Input placeholder='Basic usage' value={text} id='text' onChange={this.onChange} />
           <Input placeholder='City' value={city} id='city' onChange={this.onChange} />
-          <DatePicker showTime value={time} onChange={this.onChange} />
+          <div>
+            <DatePicker onChange={this.onChange} value={time} disabled allowClear={false} />
+            <TimePicker
+              onChange={this.onChangeTime}
+              value={time}
+              format={timerFormatWithoutSeconds}
+              allowClear={false}
+            />
+          </div>
           <GithubPicker color={color} id='color' onChangeComplete={this.onColorChange}></GithubPicker>
           <Button type='primary' onClick={this.handleSubmission}>
-            Create Reminder
+            {id !== undefined ? 'Edit Reminder' : 'Create Reminder'}
           </Button>
         </form>
       </>

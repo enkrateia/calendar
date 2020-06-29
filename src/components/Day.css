@@ -1,11 +1,16 @@
 .day-container {
+  color: blue;
+  font-size: 13px;
   width: 180px;
   height: 150px;
   background-color: rgb(190, 170, 170);
-
 }
 
-.day-container .header {
-  color: blue;
-  font-size: 13px;
+.day-header {
+  height: 10%;
+}
+
+.day-inside-container {
+  height: 90%;
+  overflow-y: auto;
 }
